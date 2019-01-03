@@ -1,0 +1,11 @@
+{
+    "autoload": {
+        "psr-4": {
+            "RefactoringRobot\\": "src"
+        }
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^7",
+	"nikic/php-parser": "^4"
+    }
+}

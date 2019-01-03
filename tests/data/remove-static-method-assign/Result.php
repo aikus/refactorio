@@ -1,0 +1,3 @@
+<?php
+
+doSome(DB::instatnce());
