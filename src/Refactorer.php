@@ -1,12 +1,12 @@
 <?php
 declare(strict_types=1);
 
-namespace RefactoringRobot;
+namespace Refactorio;
 
 use PhpParser\ParserFactory;
 use PhpParser\NodeDumper;
 use PhpParser\NodeTraverser;
-use RefactoringRobot\Visitor\TemporaryVariableRemover;
+use Refactorio\TemporaryVariable\Remover;
 use PhpParser\PrettyPrinter;
 
 class Refactorer
@@ -15,10 +15,8 @@ class Refactorer
     {
         $parser = (new ParserFactory)->create(ParserFactory::PREFER_PHP7);
         $ast = $parser->parse($source);
-        $traverser = new NodeTraverser;
-        $remover = new TemporaryVariableRemover;
-        $traverser->addVisitor($remover);
-        $result = $traverser->traverse($ast);
+        $remover = new Remover;
+        $result = $remover->refact($ast);
         return (new PrettyPrinter\Standard)->prettyPrintFile($result);
     }
 }

@@ -2,7 +2,7 @@
 declare(strict_types=1);
 
 use PHPUnit\Framework\TestCase;
-use RefactoringRobot\Refactorer;
+use Refactorio\Refactorer;
 
 class RefactorerTest extends TestCase
 {
