@@ -30,17 +30,17 @@ class EditorVisitor extends TemporaryVariableVisitor
         $this->variables = [];
         parent::functionEnd();
     }
-    private function variableExecute(Variable $node)
-    {
-        if (key_exists($node->name, $this->variables)) {
-            return $this->variables[$node->name];
-        }
-    }
     protected function variableAssign(Assign $assign)
     {
         if ($this->isTemporaryVariable($this->getVariableName($assign))) {
             $this->variables[$this->getVariableName($assign)] = $assign->expr;
             return NodeTraverser::REMOVE_NODE;
+        }
+    }
+    private function variableExecute(Variable $node)
+    {
+        if (key_exists($node->name, $this->variables)) {
+            return $this->variables[$node->name];
         }
     }
     private function isTemporaryVariable(string $name) : bool

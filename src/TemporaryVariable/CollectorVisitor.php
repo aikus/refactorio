@@ -23,16 +23,16 @@ class CollectorVisitor extends TemporaryVariableVisitor
     {
         return $this->temporaryVariables;
     }
+
+    protected function variableAssign(Assign $node)
+    {
+        $this->temporaryVariables[$this->getActualFunction()][$this->getVariableName($node)] = true;
+    }
     
     private function isMethodCall(Node $node) : bool
     {
         return $node->getType() == 'Stmt_Expression'
             && $node->expr->getType() == 'Expr_MethodCall';
-    }
-
-    protected function variableAssign(Assign $node)
-    {
-        $this->temporaryVariables[$this->getActualFunction()][$this->getVariableName($node)] = true;
     }
     
     private function saveVariable(Variable $variable)
