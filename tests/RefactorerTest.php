@@ -19,8 +19,8 @@ class RefactorerTest extends TestCase
 
     public function refactData()
     {
-        return [
-            'psr-2 format' => ['non-refactoring'],
+        return [//*
+            'format' => ['non-refactoring'],
             'remove temporary variable (function)' => ['remove-temporary-variable'],
             'save object variable' => ['save-object-variable'],
             'save object variable (not new)' => ['save-class-variable'],
@@ -31,6 +31,13 @@ class RefactorerTest extends TestCase
             'save parameter after temporary variable (method)' => ['parameter-after-variable'],
             'save parameter after temporary variable (static method)' => ['parameter-after-variable-static-method'],
             'save parameter after temporary variable (function)' => ['parameter-after-variable-function'],
+            'save array variable' => ['save-array-variable'],
+            'save array variable (from function)' => ['save-array-variable-from-function'],
+            'save association array variable' => ['save-assoc-array-variable'],
+            'save variable before include' => ['save-variable-before-include'],
+            'save variable before require' => ['save-variable-before-require'],
+            'save variable before include_once' => ['save-variable-before-include-once'],//*/
+            'save variable before compact' => ['save-variable-before-compact'],
         ];
     }
 }
