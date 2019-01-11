@@ -56,7 +56,14 @@ abstract class TemporaryVariableVisitor extends NodeVisitorAbstract
         return $assign->var->name;
     }
 
-    
+    protected function isFunctionCall(Node $node) : bool
+    {
+        return in_array($node->getType(), [
+            'Expr_FuncCall',
+            'Expr_StaticCall',
+            'Expr_MethodCall',
+        ]);
+    }
     
     private function isTemporaryVariableExpression(Node $node)
     {
@@ -68,12 +75,9 @@ abstract class TemporaryVariableVisitor extends NodeVisitorAbstract
     private function isTemporaryVariableAssign(Assign $assign)
     {
         return $assign->var->getType() == 'Expr_Variable'
-            && in_array($assign->expr->getType(), [
-                'Expr_FuncCall',
-                'Expr_StaticCall',
-                'Expr_MethodCall',
+            && (in_array($assign->expr->getType(), [
                 'Expr_ConstFetch',
                 'Expr_ClassConstFetch',
-            ]);
+            ]) || $this->isFunctionCall($assign->expr));
     }
 }

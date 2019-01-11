@@ -18,8 +18,14 @@ class CollectorVisitor extends TemporaryVariableVisitor
             $this->temporaryVariables = [];
             return;
         }
-        
-        $this->saveVariables($this->getSaveVariables($node));
+        try {
+            $this->saveVariables($this->getSaveVariables($node));
+        } catch (CalculateValueException $exception) {
+            $this->temporaryVariables = [];
+            foreach($exception->getRemoveVariables() as $variable) {
+                $this->temporaryVariables[$this->getActualFunction()][$variable] = true;
+            }
+        }
 
         return parent::leaveNode($node);
     }
@@ -55,9 +61,22 @@ class CollectorVisitor extends TemporaryVariableVisitor
 
     private function getCompactVariables(FuncCall $node)
     {
+        return $this->getValuesFromArray($node->args);
+    }
+
+    private function getValuesFromArray(array $array) : array
+    {
         $result = [];
-        foreach($node->args as $arg) {
-            $result[] = $arg->value->value;
+        foreach($array as $val) {
+            if($val->value->getType() == 'Scalar_String') {
+                $result[] = $val->value->value;
+            } elseif($val->value->getType() == 'Expr_Array') {
+                $result = array_merge($result, $this->getValuesFromArray($val->value->items));
+            } elseif($val->value->getType() == 'Expr_Variable') {
+                throw new CalculateValueException([$val->value->name]);
+            } elseif($this->isFunctionCall($val->value)) {
+                throw new CalculateValueException([]);
+            }
         }
         return $result;
     }

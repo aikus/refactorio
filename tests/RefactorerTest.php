@@ -36,8 +36,12 @@ class RefactorerTest extends TestCase
             'save association array variable' => ['save-assoc-array-variable'],
             'save variable before include' => ['save-variable-before-include'],
             'save variable before require' => ['save-variable-before-require'],
-            'save variable before include_once' => ['save-variable-before-include-once'],//*/
-            'save variable before compact' => ['save-variable-before-compact'],
+            'save variable before include_once' => ['save-variable-before-include-once'],
+            'save variable before compact' => ['save-variable-before-compact'],//*/
+            'save variable before compact (array input)' => ['save-variable-before-compact-input-array'],
+            'save variables before calculate compact (variable)' => ['save-variables-before-calculate-compact'],
+            'save variables before calculate compact (function)' => ['save-variables-before-calculate-compact-function'],
+            'save variables before calculate compact (method)' => ['save-variable-before-compact-method'],
         ];
     }
 }
