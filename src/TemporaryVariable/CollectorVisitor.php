@@ -11,12 +11,19 @@ use PhpParser\Node\Expr\FuncCall;
 class CollectorVisitor extends TemporaryVariableVisitor
 {
     private $temporaryVariables = [];
+    private $builder;
     
     public function leaveNode(Node $node)
     {
-        if($this->isInclude($node)) {
+        $model = $this->getBuilder()->get($node);
+        if($model->saveAllParameters()) {
             $this->temporaryVariables = [];
-            return;
+        }
+        if($model->getRemoveVariable()) {
+            $this->temporaryVariables[$this->getActualFunction()][$model->getRemoveVariable()] = true;
+        }
+        foreach($model->getSaveVariables() as $variable) {
+            $this->temporaryVariables[$this->getActualFunction()][$variable] = false;
         }
         try {
             $this->saveVariables($this->getSaveVariables($node));
@@ -27,7 +34,7 @@ class CollectorVisitor extends TemporaryVariableVisitor
             }
         }
 
-        return parent::leaveNode($node);
+        //return parent::leaveNode($node);
     }
     
     public function getTemporaryVariables() : array
@@ -38,6 +45,14 @@ class CollectorVisitor extends TemporaryVariableVisitor
     protected function variableAssign(Assign $node)
     {
         $this->temporaryVariables[$this->getActualFunction()][$this->getVariableName($node)] = true;
+    }
+
+    private function getBuilder() : ModelBuilder
+    {
+        if(!$this->builder) {
+            $this->builder = new ModelBuilder;
+        }
+        return $this->builder;
     }
 
     private function getSaveVariables(Node $node) : array
@@ -51,7 +66,20 @@ class CollectorVisitor extends TemporaryVariableVisitor
         if($this->isCompact($node)) {
             return $this->getCompactVariables($node);
         }
+        if($this->isLinkCall($node)) {
+            return $this->getLinkVariables($node);
+        }
         return [];
+    }
+
+    private function isLinkCall(Node $node) : bool
+    {
+        return $node->getType() == 'Expr_FuncCall' && $node->name == 'asort';
+    }
+
+    private function getLinkVariables(Node $node) : array
+    {
+        return [$node->args[0]->value->name];
     }
 
     private function isCompact(Node $node)
