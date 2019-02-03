@@ -41,11 +41,4 @@ class CollectorVisitor extends TemporaryVariableVisitor
         }
         return $this->builder;
     }
-    
-    private function saveVariables(array $variables)
-    {
-        foreach($variables as $variable) {
-            $this->temporaryVariables[$this->getActualFunction()][$variable] = false;
-        }
-    }
 }
