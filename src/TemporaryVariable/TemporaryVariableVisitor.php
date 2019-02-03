@@ -23,12 +23,8 @@ abstract class TemporaryVariableVisitor extends NodeVisitorAbstract
     {
         if ($this->isFunction($node)) {
             return $this->functionEnd();
-        } elseif ($this->isTemporaryVariableExpression($node)) {
-            return $this->variableAssign($node->expr);
         }
     }
-
-    abstract protected function variableAssign(Assign $node);
 
     protected function isFunction(Node $node)
     {
@@ -63,21 +59,5 @@ abstract class TemporaryVariableVisitor extends NodeVisitorAbstract
             'Expr_StaticCall',
             'Expr_MethodCall',
         ]);
-    }
-    
-    private function isTemporaryVariableExpression(Node $node)
-    {
-        return $node->getType() == 'Stmt_Expression'
-            && $node->expr->getType() == 'Expr_Assign'
-            && $this->isTemporaryVariableAssign($node->expr);
-    }
-
-    private function isTemporaryVariableAssign(Assign $assign)
-    {
-        return $assign->var->getType() == 'Expr_Variable'
-            && (in_array($assign->expr->getType(), [
-                'Expr_ConstFetch',
-                'Expr_ClassConstFetch',
-            ]) || $this->isFunctionCall($assign->expr));
     }
 }

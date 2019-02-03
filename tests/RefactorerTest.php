@@ -19,7 +19,7 @@ class RefactorerTest extends TestCase
 
     public function refactData()
     {
-        return [//*
+        return [
             'format' => ['non-refactoring'],
             'remove temporary variable (function)' => ['remove-temporary-variable'],
             'save object variable' => ['save-object-variable'],
@@ -37,7 +37,7 @@ class RefactorerTest extends TestCase
             'save variable before include' => ['save-variable-before-include'],
             'save variable before require' => ['save-variable-before-require'],
             'save variable before include_once' => ['save-variable-before-include-once'],
-            'save variable before compact' => ['save-variable-before-compact'],//*/
+            'save variable before compact' => ['save-variable-before-compact'],
             'save variable before compact (array input)' => ['save-variable-before-compact-input-array'],
             'save variables before calculate compact (variable)' => ['save-variables-before-calculate-compact'],
             'save variables before calculate compact (function)' => ['save-variables-before-calculate-compact-function'],

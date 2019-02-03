@@ -14,6 +14,12 @@ class Assign extends NoopModel
             ? $this->getNode()->var->name : "";
     }
 
+    public function getSaveVariables() : array
+    {
+        return $this->getNode()->var->getType() == 'Expr_ArrayDimFetch'
+            ? [$this->getNode()->var->var->name] : [];
+    }
+
     private function isTemporaryVariableAssign(\PhpParser\Node\Expr\Assign $assign)
     {
         return $assign->var->getType() == 'Expr_Variable'

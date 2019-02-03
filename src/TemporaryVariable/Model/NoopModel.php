@@ -30,6 +30,11 @@ class NoopModel implements Model
         return "";
     }
 
+    public function getRemoveVariables() : array
+    {
+        return [];
+    }
+
     protected function getNode() : Node
     {
         return $this->node;

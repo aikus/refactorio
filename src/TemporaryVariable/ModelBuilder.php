@@ -4,31 +4,26 @@ declare (strict_types=1);
 namespace Refactorio\TemporaryVariable;
 
 use PhpParser\Node;
-use Refactorio\TemporaryVariable\Model\IncludeModel;
-use Refactorio\TemporaryVariable\Model\NoopModel;
-use Refactorio\TemporaryVariable\Model\Assign;
 
 class ModelBuilder
 {
+    const MODELS = [
+        'Expr_Include' => '\Refactorio\TemporaryVariable\Model\IncludeModel',
+        'Expr_Assign' => '\Refactorio\TemporaryVariable\Model\Assign',
+        'Expr_MethodCall' => '\Refactorio\TemporaryVariable\Model\MethodCall',
+        'Expr_FuncCall' => '\Refactorio\TemporaryVariable\Model\FuncCall',
+    ];
+
     public function get(Node $node) : Model
     {
-        if($this->isInclude($node)) {
-            return new IncludeModel($node);
-        }
-        if($this->isAssign($node)) {
-            return new Assign($node);
-        }
-        return new NoopModel($node);
+        $class = $this->getModelClass($node);
+        return new $class($node);
     }
 
-    private function isInclude(Node $node)
+    private function getModelClass(Node $node) : string
     {
-        return $node->getType() == 'Stmt_Expression'
-            && $node->expr->getType() == 'Expr_Include';
-    }
-
-    private function isAssign(Node $node)
-    {
-        return $node->getType() == 'Expr_Assign';
+        return key_exists($node->getType(), self::MODELS)
+            ? self::MODELS[$node->getType()]
+            : '\Refactorio\TemporaryVariable\Model\NoopModel';
     }
 }

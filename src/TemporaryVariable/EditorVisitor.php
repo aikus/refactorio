@@ -19,8 +19,11 @@ class EditorVisitor extends TemporaryVariableVisitor
     
     public function leaveNode(Node $node)
     {
-        if ($node instanceof Variable) {
+        if ($node->getType() == 'Expr_Variable') {
             return $this->variableExecute($node);
+        }
+        if ($this->isTemporaryVariableExpression($node)) {
+            return $this->variableAssign($node->expr);
         }
         return parent::leaveNode($node);
     }
@@ -30,6 +33,7 @@ class EditorVisitor extends TemporaryVariableVisitor
         $this->variables = [];
         parent::functionEnd();
     }
+
     protected function variableAssign(Assign $assign)
     {
         if ($this->isTemporaryVariable($this->getVariableName($assign))) {
@@ -37,16 +41,35 @@ class EditorVisitor extends TemporaryVariableVisitor
             return NodeTraverser::REMOVE_NODE;
         }
     }
+
     private function variableExecute(Variable $node)
     {
         if (key_exists($node->name, $this->variables)) {
             return $this->variables[$node->name];
         }
     }
+
     private function isTemporaryVariable(string $name) : bool
     {
         return key_exists($this->getActualFunction(), $this->temporaryVariables)
             && key_exists($name, $this->temporaryVariables[$this->getActualFunction()])
             && $this->temporaryVariables[$this->getActualFunction()][$name];
+    }
+
+    
+    private function isTemporaryVariableExpression(Node $node)
+    {
+        return $node->getType() == 'Stmt_Expression'
+            && $node->expr->getType() == 'Expr_Assign'
+            && $this->isTemporaryVariableAssign($node->expr);
+    }
+
+    private function isTemporaryVariableAssign(Assign $assign)
+    {
+        return $assign->var->getType() == 'Expr_Variable'
+            && (in_array($assign->expr->getType(), [
+                'Expr_ConstFetch',
+                'Expr_ClassConstFetch',
+            ]) || $this->isFunctionCall($assign->expr));
     }
 }
