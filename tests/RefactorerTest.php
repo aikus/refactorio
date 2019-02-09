@@ -43,6 +43,7 @@ class RefactorerTest extends TestCase
             'save variables before calculate compact (function)' => ['save-variables-before-calculate-compact-function'],
             'save variables before calculate compact (method)' => ['save-variable-before-compact-method'],
             'save variable before use as link (asort)' => ['save-variable-use-as-link-asort'],
+            'save variable before calculate compact (save array)' => ['save-variables-before-comapare-array'],
         ];
     }
 }
