@@ -67,9 +67,11 @@ class EditorVisitor extends TemporaryVariableVisitor
     private function isTemporaryVariableAssign(Assign $assign)
     {
         return $assign->var->getType() == 'Expr_Variable'
-            && (in_array($assign->expr->getType(), [
+            && (in_array(
+                $assign->expr->getType(), [
                 'Expr_ConstFetch',
                 'Expr_ClassConstFetch',
-            ]) || $this->isFunctionCall($assign->expr));
+                ]
+            ) || $this->isFunctionCall($assign->expr));
     }
 }

@@ -54,10 +54,12 @@ abstract class TemporaryVariableVisitor extends NodeVisitorAbstract
 
     protected function isFunctionCall(Node $node) : bool
     {
-        return in_array($node->getType(), [
+        return in_array(
+            $node->getType(), [
             'Expr_FuncCall',
             'Expr_StaticCall',
             'Expr_MethodCall',
-        ]);
+            ]
+        );
     }
 }

@@ -35,7 +35,8 @@ class CollectorVisitor extends TemporaryVariableVisitor
     {
         foreach($variables as $variable) {
             if(!key_exists($this->getActualFunction(), $this->saveVariables)
-            || !key_exists($variable, $this->saveVariables[$this->getActualFunction()])) {
+                || !key_exists($variable, $this->saveVariables[$this->getActualFunction()])
+            ) {
                 $this->temporaryVariables[$this->getActualFunction()][$variable] = true;
             }
         }

@@ -23,18 +23,22 @@ class Assign extends NoopModel
     private function isTemporaryVariableAssign(\PhpParser\Node\Expr\Assign $assign)
     {
         return $assign->var->getType() == 'Expr_Variable'
-            && (in_array($assign->expr->getType(), [
+            && (in_array(
+                $assign->expr->getType(), [
                 'Expr_ConstFetch',
                 'Expr_ClassConstFetch',
-            ]) || $this->isFunctionCall($assign->expr));
+                ]
+            ) || $this->isFunctionCall($assign->expr));
     }
  
     private function isFunctionCall(Node $node) : bool
     {
-        return in_array($node->getType(), [
+        return in_array(
+            $node->getType(), [
             'Expr_FuncCall',
             'Expr_StaticCall',
             'Expr_MethodCall',
-        ]);
+            ]
+        );
     }
 }

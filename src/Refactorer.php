@@ -17,6 +17,8 @@ class Refactorer
             ->prettyPrintFile(
                 $remover->refact(
                     (new ParserFactory())->create(ParserFactory::PREFER_PHP7)
-                                                                    ->parse($source)));
+                        ->parse($source)
+                )
+            );
     }
 }
