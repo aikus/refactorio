@@ -35,6 +35,11 @@ class NoopModel implements Model
         return [];
     }
 
+    public function isParentFunction() : bool
+    {
+        return false;
+    }
+
     protected function getNode() : Node
     {
         return $this->node;

@@ -18,10 +18,10 @@ class CollectorVisitor extends TemporaryVariableVisitor
             $this->saveAllParameters();
         }
         if($model->getRemoveVariable()) {
-            $this->temporaryVariables[$this->getActualFunction()][$model->getRemoveVariable()] = true;
+            $this->temporaryVariables[$this->funcName($model)][$model->getRemoveVariable()] = true;
         }
-        $this->removeVariables($model->getRemoveVariables());
-        $this->saveVariables($model->getSaveVariables());
+        $this->removeVariables($model);
+        $this->saveVariables($model);
 
         parent::leaveNode($node);
     }
@@ -31,15 +31,22 @@ class CollectorVisitor extends TemporaryVariableVisitor
         return $this->temporaryVariables;
     }
 
-    private function removeVariables(array $variables)
+    private function removeVariables(Model $model)
     {
-        foreach($variables as $variable) {
-            if(!key_exists($this->getActualFunction(), $this->saveVariables)
-                || !key_exists($variable, $this->saveVariables[$this->getActualFunction()])
+        foreach($model->getRemoveVariables() as $variable) {
+            if(!key_exists($this->funcName($model), $this->saveVariables)
+            || !key_exists($variable, $this->saveVariables[$this->funcName($model)])
             ) {
-                $this->temporaryVariables[$this->getActualFunction()][$variable] = true;
+                $this->temporaryVariables[$this->funcName($model)][$variable] = true;
             }
         }
+    }
+
+    private function funcName(Model $model) : string
+    {
+        return $model->isParentFunction()
+            ? $this->getParentFunction()
+            : $this->getActualFunction();
     }
 
     private function saveAllParameters()
@@ -47,11 +54,11 @@ class CollectorVisitor extends TemporaryVariableVisitor
         $this->temporaryVariables[$this->getActualFunction()] = [];
     }
 
-    private function saveVariables(array $variables)
+    private function saveVariables(Model $model)
     {
-        foreach($variables as $variable) {
-            $this->saveVariables[$this->getActualFunction()][$variable] = true;
-            $this->temporaryVariables[$this->getActualFunction()][$variable] = false;
+        foreach($model->getSaveVariables() as $variable) {
+            $this->saveVariables[$this->funcName($model)][$variable] = true;
+            $this->temporaryVariables[$this->funcName($model)][$variable] = false;
         }
     }
 

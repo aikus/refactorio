@@ -9,8 +9,9 @@ use PhpParser\Node\Expr\Assign;
 abstract class TemporaryVariableVisitor extends NodeVisitorAbstract
 {
     const NOT_FUNCTION = '--NOT-FUNCTION--';
+    const CLOSURE = '--CLOSURE--';
 
-    private $function = self::NOT_FUNCTION;
+    private $functions = [self::NOT_FUNCTION];
 
     public function enterNode(Node $node)
     {
@@ -29,22 +30,30 @@ abstract class TemporaryVariableVisitor extends NodeVisitorAbstract
     protected function isFunction(Node $node)
     {
         return $node->getType() == 'Stmt_ClassMethod'
-            || $node->getType() == 'Stmt_Function';
+            || $node->getType() == 'Stmt_Function'
+            || $node->getType() == 'Expr_Closure';
     }
 
     protected function functionStart(Node $node)
     {
-        $this->function = $node->name->name;
+        $this->functions[] = $node->getType() == 'Expr_Closure'
+            ? self::CLOSURE
+            : $node->name->name;
     }
 
     protected function functionEnd()
     {
-        $this->function = self::NOT_FUNCTION;
+        array_pop($this->functions);
     }
 
     protected function getActualFunction() : string
     {
-        return $this->function;
+        return $this->functions[count($this->functions) - 1];
+    }
+
+    protected function getParentFunction() : string
+    {
+        return $this->functions[count($this->functions) - 2];
     }
 
     protected function getVariableName(Assign $assign) : string

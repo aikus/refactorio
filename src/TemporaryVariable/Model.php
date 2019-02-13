@@ -8,4 +8,5 @@ interface Model
     public function getSaveVariables() : array;
     public function getRemoveVariable() : string;
     public function getRemoveVariables() : array;
+    public function isParentFunction() : bool;
 }
