@@ -12,6 +12,7 @@ abstract class TemporaryVariableVisitor extends NodeVisitorAbstract
     const CLOSURE = '--CLOSURE--';
 
     private $functions = [self::NOT_FUNCTION];
+    private $closureIndex = 0;
 
     public function enterNode(Node $node)
     {
@@ -37,7 +38,7 @@ abstract class TemporaryVariableVisitor extends NodeVisitorAbstract
     protected function functionStart(Node $node)
     {
         $this->functions[] = $node->getType() == 'Expr_Closure'
-            ? self::CLOSURE
+            ? self::CLOSURE.($this->closureIndex++)
             : $node->name->name;
     }
 

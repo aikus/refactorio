@@ -46,6 +46,8 @@ class RefactorerTest extends TestCase
             'save variable before calculate compact (save array)' => ['save-variables-before-comapare-array'],
             'save variable using for closure' => ['save-closure-variables'],
             'closure is function!' => ['closure-is-function'],
+            'multy closure' => ['multy-closure'],
+            'closure in closure' => ['closure-in-closure'],
         ];
     }
 }
