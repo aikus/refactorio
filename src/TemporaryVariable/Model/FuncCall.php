@@ -8,14 +8,17 @@ class FuncCall extends NoopModel
     private $removeVariables = [];
     private $saveVariables = [];
     private $saveAll = false;
+    const FUNCTION_WITH_LINK = [
+        'asort' => [0],
+    ];
 
     public function __construct(\PhpParser\Node\Expr\FuncCall $node)
     {
         parent::__construct($node);
         if($node->name == 'compact') {
             $this->calcValuesFromArray($node->args);
-        } elseif($node->name == 'asort') {
-            $this->saveVariables[] = $node->args[0]->value->name;
+        } else {
+            $this->saveVariables = array_merge($this->saveVariables, $this->getLinkVariables());
         }
     }
 
@@ -48,5 +51,21 @@ class FuncCall extends NoopModel
                 $this->saveAll = true;
             }
         }
-    } 
+    }
+
+    private function getLinkVariables() : array
+    {
+        $result = [];
+        if($this->getNode()->name->getType() != 'Name'
+        || !key_exists($this->getNode()->name->toString(), self::FUNCTION_WITH_LINK)) {
+            return $result;
+        }
+        foreach(self::FUNCTION_WITH_LINK[$this->getNode()->name->toString()] as $position) {
+            if(key_exists($position, $this->getNode()->args)
+            && $this->getNode()->args[$position]->value->getType() == 'Expr_Variable') {
+                $result[] = $this->getNode()->args[$position]->value->name;
+            }
+        }
+        return $result;
+    }
 }
