@@ -9,6 +9,7 @@
 	"nikic/php-parser": "^4"
     },
     "require-dev": {
-        "phpunit/phpunit": "^7"
+        "phpunit/phpunit": "^7",
+        "infection/infection": "^0.12.2"
     }
 }

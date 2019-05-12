@@ -2,6 +2,7 @@
 
 declare (strict_types=1);
 namespace Refactorio\TemporaryVariable\Model;
+use PhpParser\Node;
 
 class FuncCall extends NoopModel
 {
@@ -9,7 +10,7 @@ class FuncCall extends NoopModel
     private $saveVariables = [];
     private $saveAll = false;
     const FUNCTION_WITH_LINK = [
-                'apcu_dec' => [2],
+        'apcu_dec' => [2],
         'apcu_fetch' => [1],
         'apcu_inc' => [2],
         'apc_dec' => [2],
@@ -222,6 +223,14 @@ class FuncCall extends NoopModel
         'yaz_wait' => [0],
     ];
 
+    const COMPACT_HANDLERS = [
+        'Scalar_String' => 'saveScalarString',
+        'Expr_Array' => 'openArray',
+        'Expr_Variable' => 'openVariable',
+        'Expr_MethodCall' => 'funcCall',
+        'Expr_FuncCall' => 'funcCall',
+    ];
+
     public function __construct(\PhpParser\Node\Expr\FuncCall $node)
     {
         parent::__construct($node);
@@ -250,16 +259,8 @@ class FuncCall extends NoopModel
     private function calcValuesFromArray(array $array)
     {
         foreach($array as $val) {
-            if($val->value->getType() == 'Scalar_String') {
-                $this->saveVariables[] = $val->value->value;
-            } elseif($val->value->getType() == 'Expr_Array') {
-                $this->calcValuesFromArray($val->value->items);
-            } elseif($val->value->getType() == 'Expr_Variable') {
-                $this->saveAll = true;
-                $this->removeVariables[] = $val->value->name;//TODO: Возможно переменную нельзя удалять.
-            } elseif(in_array($val->value->getType(), ['Expr_MethodCall', 'Expr_FuncCall'])) {
-                $this->saveAll = true;
-            }
+            $method = self::COMPACT_HANDLERS[$val->value->getType()];
+            $this->$method($val->value);
         }
     }
 
@@ -271,11 +272,34 @@ class FuncCall extends NoopModel
             return $result;
         }
         foreach(self::FUNCTION_WITH_LINK[$this->getNode()->name->toString()] as $position) {
-            if(key_exists($position, $this->getNode()->args)
-            && $this->getNode()->args[$position]->value->getType() == 'Expr_Variable') {
+            if(key_exists($position, $this->getNode()->args)) {
+                if($this->getNode()->args[$position]->value->getType() != 'Expr_Variable') {
+                    throw new \Exception("$position can be variable");
+                }
                 $result[] = $this->getNode()->args[$position]->value->name;
             }
         }
         return $result;
+    }
+
+    private function saveScalarString(Node $node)
+    {
+        $this->saveVariables[] = $node->value;
+    }
+
+    private function openArray(Node $node)
+    {
+        $this->calcValuesFromArray($node->items);
+    }
+
+    private function openVariable(Node $node)
+    {
+        $this->saveAll = true;
+        $this->removeVariables[] = $node->name;
+    }
+
+    private function funcCall()
+    {
+        $this->saveAll = true;
     }
 }

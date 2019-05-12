@@ -2,3 +2,7 @@
 composer.lock
 composer.phar
 vendor/*
+/nbproject/private/
+/infection.log
+/infection.json.dist
+nbproject/

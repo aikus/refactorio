@@ -28,20 +28,6 @@ abstract class TemporaryVariableVisitor extends NodeVisitorAbstract
         }
     }
 
-    protected function isFunction(Node $node)
-    {
-        return $node->getType() == 'Stmt_ClassMethod'
-            || $node->getType() == 'Stmt_Function'
-            || $node->getType() == 'Expr_Closure';
-    }
-
-    protected function functionStart(Node $node)
-    {
-        $this->functions[] = $node->getType() == 'Expr_Closure'
-            ? self::CLOSURE.($this->closureIndex++)
-            : $node->name->name;
-    }
-
     protected function functionEnd()
     {
         array_pop($this->functions);
@@ -71,5 +57,19 @@ abstract class TemporaryVariableVisitor extends NodeVisitorAbstract
             'Expr_MethodCall',
             ]
         );
+    }
+
+    private function functionStart(Node $node)
+    {
+        $this->functions[] = $node->getType() == 'Expr_Closure'
+            ? self::CLOSURE.($this->closureIndex++)
+            : $node->name->name;
+    }
+
+    private function isFunction(Node $node)
+    {
+        return $node->getType() == 'Stmt_ClassMethod'
+            || $node->getType() == 'Stmt_Function'
+            || $node->getType() == 'Expr_Closure';
     }
 }

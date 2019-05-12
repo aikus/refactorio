@@ -22,8 +22,6 @@ class CollectorVisitor extends TemporaryVariableVisitor
         }
         $this->removeVariables($model);
         $this->saveVariables($model);
-
-        parent::leaveNode($node);
     }
     
     public function getTemporaryVariables() : array
@@ -35,7 +33,7 @@ class CollectorVisitor extends TemporaryVariableVisitor
     {
         foreach($model->getRemoveVariables() as $variable) {
             if(!key_exists($this->funcName($model), $this->saveVariables)
-            || !key_exists($variable, $this->saveVariables[$this->funcName($model)])
+            || !in_array($variable, $this->saveVariables[$this->funcName($model)])
             ) {
                 $this->temporaryVariables[$this->funcName($model)][$variable] = true;
             }
@@ -57,7 +55,7 @@ class CollectorVisitor extends TemporaryVariableVisitor
     private function saveVariables(Model $model)
     {
         foreach($model->getSaveVariables() as $variable) {
-            $this->saveVariables[$this->funcName($model)][$variable] = true;
+            $this->saveVariables[$this->funcName($model)][] = $variable;
             $this->temporaryVariables[$this->funcName($model)][$variable] = false;
         }
     }

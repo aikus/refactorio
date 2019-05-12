@@ -19,10 +19,11 @@ class EditorVisitor extends TemporaryVariableVisitor
     
     public function leaveNode(Node $node)
     {
-        if ($node->getType() == 'Expr_Variable') {
+        if ($this->needVariableExecute($node)) {
             return $this->variableExecute($node);
         }
-        if ($this->isTemporaryVariableExpression($node)) {
+        if ($this->isTemporaryVariableExpression($node)
+        && $this->isTemporaryVariable($this->getVariableName($node->expr))) {
             return $this->variableAssign($node->expr);
         }
         return parent::leaveNode($node);
@@ -34,20 +35,22 @@ class EditorVisitor extends TemporaryVariableVisitor
         parent::functionEnd();
     }
 
-    protected function variableAssign(Assign $assign)
+    private function variableAssign(Assign $assign)
     {
-        if ($this->isTemporaryVariable($this->getVariableName($assign))) {
-            $this->variables[$this->getActualFunction()][$this->getVariableName($assign)] = $assign->expr;
-            return NodeTraverser::REMOVE_NODE;
-        }
+        $this->variables[$this->getActualFunction()][$this->getVariableName($assign)] = $assign->expr;
+        return NodeTraverser::REMOVE_NODE;
+    }
+
+    private function needVariableExecute(Node $node)
+    {
+        return $node->getType() == 'Expr_Variable'
+            && key_exists($this->getActualFunction(), $this->variables)
+            && key_exists($node->name, $this->variables[$this->getActualFunction()]);        
     }
 
     private function variableExecute(Variable $node)
     {
-        if (key_exists($this->getActualFunction(), $this->variables)
-        && key_exists($node->name, $this->variables[$this->getActualFunction()])) {
-            return $this->variables[$this->getActualFunction()][$node->name];
-        }
+        return $this->variables[$this->getActualFunction()][$node->name];
     }
 
     private function isTemporaryVariable(string $name) : bool
