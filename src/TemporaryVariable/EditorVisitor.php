@@ -29,12 +29,6 @@ class EditorVisitor extends TemporaryVariableVisitor
         return parent::leaveNode($node);
     }
 
-    protected function functionEnd()
-    {
-        $this->variables[$this->getActualFunction()] = [];
-        parent::functionEnd();
-    }
-
     private function variableAssign(Assign $assign)
     {
         $this->variables[$this->getActualFunction()][$this->getVariableName($assign)] = $assign->expr;

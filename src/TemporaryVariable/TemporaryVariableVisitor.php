@@ -28,7 +28,7 @@ abstract class TemporaryVariableVisitor extends NodeVisitorAbstract
         }
     }
 
-    protected function functionEnd()
+    private function functionEnd()
     {
         array_pop($this->functions);
     }
@@ -62,7 +62,7 @@ abstract class TemporaryVariableVisitor extends NodeVisitorAbstract
     private function functionStart(Node $node)
     {
         $this->functions[] = $node->getType() == 'Expr_Closure'
-            ? self::CLOSURE.($this->closureIndex++)
+            ? self::CLOSURE.($node->getLine().':'.$node->getStartLine())
             : $node->name->name;
     }
 
