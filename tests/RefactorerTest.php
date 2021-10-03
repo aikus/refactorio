@@ -33,6 +33,7 @@ class RefactorerTest extends TestCase
             'save parameter after temporary variable (function)' => ['parameter-after-variable-function'],
             'save array variable' => ['save-array-variable'],
             'save array variable (from function)' => ['save-array-variable-from-function'],
+            'save multy array variable' => ['save-multy-array-variable'],
             'save association array variable' => ['save-assoc-array-variable'],
             'save variable before include' => ['save-variable-before-include'],
             'save variable before require' => ['save-variable-before-require'],
