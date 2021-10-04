@@ -12,7 +12,6 @@ abstract class TemporaryVariableVisitor extends NodeVisitorAbstract
     const CLOSURE = '--CLOSURE--';
 
     private $functions = [self::NOT_FUNCTION];
-    private $closureIndex = 0;
 
     public function enterNode(Node $node)
     {

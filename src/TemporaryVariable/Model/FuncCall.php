@@ -3,6 +3,8 @@
 declare (strict_types=1);
 namespace Refactorio\TemporaryVariable\Model;
 use PhpParser\Node;
+use PhpParser\Node\Expr\FuncCall as PHPFuncCall;
+use \Exception;
 
 class FuncCall extends NoopModel
 {
@@ -231,14 +233,10 @@ class FuncCall extends NoopModel
         'Expr_FuncCall' => 'funcCall',
     ];
 
-    public function __construct(\PhpParser\Node\Expr\FuncCall $node)
+    public function __construct(PHPFuncCall $node)
     {
         parent::__construct($node);
-        if($node->name == 'compact') {
-            $this->calcValuesFromArray($node->args);
-        } else {
-            $this->saveVariables = $this->getLinkVariables();
-        }
+        $this->parse($node);
     }
 
     public function saveAllParameters() : bool
@@ -274,7 +272,7 @@ class FuncCall extends NoopModel
         foreach(self::FUNCTION_WITH_LINK[$this->getNode()->name->toString()] as $position) {
             if(key_exists($position, $this->getNode()->args)) {
                 if($this->getNode()->args[$position]->value->getType() != 'Expr_Variable') {
-                    throw new \Exception("$position can be variable");
+                    throw new Exception("$position can be variable");
                 }
                 $result[] = $this->getNode()->args[$position]->value->name;
             }
@@ -301,5 +299,14 @@ class FuncCall extends NoopModel
     private function funcCall()
     {
         $this->saveAll = true;
+    }
+
+    private function parse(PHPFuncCall $node)
+    {
+        if($node->name == 'compact') {
+            $this->calcValuesFromArray($node->args);
+            return;
+        }
+        $this->saveVariables = $this->getLinkVariables();
     }
 }
