@@ -13,6 +13,7 @@ class ModelBuilder
         'Expr_MethodCall' => '\Refactorio\TemporaryVariable\Model\MethodCall',
         'Expr_FuncCall' => '\Refactorio\TemporaryVariable\Model\FuncCall',
         'Expr_Closure' => '\Refactorio\TemporaryVariable\Model\Closure',
+        'Expr_New' => '\Refactorio\TemporaryVariable\Model\CreateObject',
     ];
 
     public function get(Node $node) : Model
