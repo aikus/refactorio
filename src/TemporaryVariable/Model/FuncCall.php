@@ -4,6 +4,7 @@ declare (strict_types=1);
 namespace Refactorio\TemporaryVariable\Model;
 use PhpParser\Node;
 use PhpParser\Node\Expr\FuncCall as PHPFuncCall;
+use PhpParser\Node\Expr\Variable;
 use \Exception;
 
 class FuncCall extends NoopModel
@@ -305,6 +306,10 @@ class FuncCall extends NoopModel
     {
         if($node->name == 'compact') {
             $this->calcValuesFromArray($node->args);
+            return;
+        }
+        if($node->name instanceof Variable) {
+            $this->saveVariables = [$node->name->name];
             return;
         }
         $this->saveVariables = $this->getLinkVariables();

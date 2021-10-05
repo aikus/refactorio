@@ -50,6 +50,7 @@ class RefactorerTest extends TestCase
             'multy closure' => ['multy-closure'],
             'closure in closure' => ['closure-in-closure'],
             'save variable as a class name' => ['save-variables-as-class-name'],
+            'save variable as a function name' => ['save-variable-as-a-function-name'],
         ];
     }
 }
